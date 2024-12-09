@@ -1,9 +1,11 @@
 const rows = 20;
 const cols = 20;
-const boxSize = 25;
+const boxSize = 50;
+const appleSize = boxSize*1;
 
 const canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
+var refreshing;
 
 
 var snakeBody = [];
@@ -31,6 +33,12 @@ function generateAppleCords() {
 
 }
 
+function endGame() {
+    clearInterval(refreshing);
+    alert("Game over");
+    
+}
+
 function refreshGame() {
 
     ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -43,16 +51,20 @@ function refreshGame() {
     }
 
     ctx.fillStyle = "red";
-    ctx.fillRect(apple.x*boxSize, apple.y*boxSize, boxSize, boxSize);
+    img = new Image();
+    img.src = "assets/apple.svg";
+    ctx.drawImage(img, apple.x*boxSize, apple.y*boxSize, appleSize, appleSize);
 
     ctx.fillStyle = "green";
     ctx.fillRect(snakeHead.x * boxSize, snakeHead.y * boxSize, boxSize, boxSize);
+    
 
-    if ((snakeHead.x >= canvas.width/boxSize) || (snakeHead.y >= canvas.height/boxSize) || (snakeHead.x < 0) || (snakeHead.y < 0)) {
-        "..."
-    }
+    if ((snakeHead.x >= canvas.width/boxSize) || (snakeHead.y >= canvas.height/boxSize) || (snakeHead.x < 0) || (snakeHead.y < 0)) {endGame();return null;}
+
+    
 
     if ((snakeHead.x == apple.x) && (snakeHead.y == apple.y)) {
+
         snakeBody.push([apple.x, apple.y]);
         generateAppleCords();
 
@@ -68,8 +80,16 @@ function refreshGame() {
     if (snakeBody.length > 0) {
 
         for (let i = snakeBody.length - 1; i > 0; i--) {
-            snakeBody[i][0] = snakeBody[i - 1][0];
-            snakeBody[i][1] = snakeBody[i - 1][1];
+
+            let p1 = snakeBody[i - 1][0];
+            let p2 = snakeBody[i - 1][1];
+
+            snakeBody[i][0] = p1;
+            snakeBody[i][1] = p2;
+
+            
+
+            
         }
         snakeBody[0][0] = snakeHead.x;
         snakeBody[0][1] = snakeHead.y;
@@ -89,15 +109,18 @@ function startGame() {
     canvas.width = rows * boxSize;
     canvas.height = cols * boxSize;
     generateAppleCords();
-    setInterval(refreshGame, 100);
+    refreshing = setInterval(refreshGame, 100);
 
 }
 
 window.onload = startGame;
-window.addEventListener("keydown", (a)=>{
+window.addEventListener("keydown", async function(a){
+
+    
+
     if (a.key == "ArrowRight" && velocity.x >= 0 ) {velocity.x = 1; velocity.y = 0;}
     else if (a.key == "ArrowLeft" && velocity.x <= 0 ) {velocity.x = -1; velocity.y = 0;}
-    else if (a.key == "ArrowUp" && velocity.y >= 0 ) {velocity.y = -1; velocity.x = 0;}
-    else if (a.key == "ArrowDown" && velocity.y <= 0 ) {velocity.y = 1; velocity.x = 0;}
+    else if (a.key == "ArrowUp" && velocity.y <= 0 ) {velocity.y = -1; velocity.x = 0;}
+    else if (a.key == "ArrowDown" && velocity.y >= 0 ) {velocity.y = 1; velocity.x = 0;}
 
 });

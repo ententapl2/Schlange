@@ -6,6 +6,7 @@ const canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
 
 let isAppleInBody = false;
+let canInput = true;
 
 var snakeBody = [];
 
@@ -35,6 +36,7 @@ function generateAppleCords() {
 }
 
 function refreshGame() {
+    canInput = true;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -74,6 +76,7 @@ function refreshGame() {
         for (let i = snakeBody.length - 1; i > 0; i--) {
             if (isAppleInBody != true && (snakeHead.x == snakeBody[i][0] && snakeHead.y == snakeBody[i][1])){
                 alert("Game Over");
+                window.location.reload();
             }
             snakeBody[i][0] = snakeBody[i - 1][0];
             snakeBody[i][1] = snakeBody[i - 1][1];
@@ -103,9 +106,12 @@ function startGame() {
 
 window.onload = startGame;
 window.addEventListener("keydown", (a) => {
+    if(!canInput) return;
+
     if (a.key == "ArrowRight" && velocity.x >= 0) { velocity.x = 1; velocity.y = 0; }
     else if (a.key == "ArrowLeft" && velocity.x <= 0) { velocity.x = -1; velocity.y = 0; }
     else if (a.key == "ArrowUp" && velocity.y <= 0) { velocity.y = -1; velocity.x = 0; }
-    else if (a.key == "ArrowDown" && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; }
+    else if (a.key == "ArrowDown" && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; };
 
+    canInput = false;
 });

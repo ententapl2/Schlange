@@ -1,3 +1,37 @@
+@import url('https://fonts.cdnfonts.com/css/oswald-4');
+
 body {
-    text-align: center;
+    text-align:center;
+}
+
+#gameFrame {
+
+    background-color : #8ecc39;
+    filter: blur(10px);
+
+    padding:50px;
+    margin:auto;
+    border-radius:20px;
+}
+
+.c {
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+#info {
+    display:block;
+    font-size:40px;
+    font-weight : 20px;
+    font-family: 'Oswald', sans-serif;
+    position:absolute;
+    top:45%;
+    left:0;
+    right:0;
+    bottom:0;
+    
+
 }

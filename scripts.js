@@ -1,11 +1,13 @@
+const segment = 5;
+const speed = 22;
 const rows = 20;
 const cols = 20;
 const boxSize = 50;
-const appleSize = boxSize*1;
+const appleSize = boxSize;
 
 const canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
-var refreshing;
+var stillRefresh=true;
 
 
 var snakeBody = [];
@@ -34,70 +36,74 @@ function generateAppleCords() {
 }
 
 function endGame() {
-    clearInterval(refreshing);
-    alert("Game over");
-    
+
+    stillRefresh=false;
+    alert("Game over! Try again");
+    location.reload();
 }
 
-function refreshGame() {
+async function refreshGame() {
 
-    ctx.clearRect(0,0, canvas.width, canvas.height);
+    vx = velocity.x;
+    vy = velocity.y;
 
-    for (let x = 0; x < rows; x++) {
-        for (let y = 0; y < cols; y++) {
-            ctx.fillStyle = ((x-y)% 2 == 0) ? "#8ecc39" : "#a7d948";
-            ctx.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
+    for (let n=0; n<segment; n++) {
+
+        ctx.clearRect(0,0, canvas.width, canvas.height);
+
+        for (let x = 0; x < rows; x++) {
+            for (let y = 0; y < cols; y++) {
+                ctx.fillStyle = ((x-y)% 2 == 0) ? "#8ecc39" : "#a7d948";
+                ctx.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
+            }
         }
-    }
 
-    ctx.fillStyle = "red";
-    img = new Image();
-    img.src = "assets/apple.svg";
-    ctx.drawImage(img, apple.x*boxSize, apple.y*boxSize, appleSize, appleSize);
-
-    ctx.fillStyle = "green";
-    ctx.fillRect(snakeHead.x * boxSize, snakeHead.y * boxSize, boxSize, boxSize);
-    
-
-    if ((snakeHead.x >= canvas.width/boxSize) || (snakeHead.y >= canvas.height/boxSize) || (snakeHead.x < 0) || (snakeHead.y < 0)) {endGame();return null;}
-
-    
-
-    if ((snakeHead.x == apple.x) && (snakeHead.y == apple.y)) {
-
-        snakeBody.push([apple.x, apple.y]);
-        generateAppleCords();
-
-    }
-
-    for (let i=0; i<snakeBody.length; i++ ) {
+        ctx.fillStyle = "red";
+        img = new Image();
+        img.src = "assets/apple.svg";
+        ctx.drawImage(img, apple.x*boxSize, apple.y*boxSize, appleSize, appleSize);
 
         ctx.fillStyle = "green";
-        ctx.fillRect(snakeBody[i][0] * boxSize, snakeBody[i][1]* boxSize, boxSize, boxSize);
+        ctx.fillRect(snakeHead.x * boxSize, snakeHead.y * boxSize, boxSize, boxSize);
+        t = {x:Math.round(snakeHead.x), y:Math.round(snakeHead.y)};
 
-    }
-   
-    if (snakeBody.length > 0) {
+        if ((t.x>= canvas.width/boxSize) || (t.y >= canvas.height/boxSize) || (t.x < 0) || (t.y < 0)) {endGame();return null;}
+        if ((Math.round(snakeHead.x) == apple.x) && (Math.round(snakeHead.y) == apple.y)) {
 
-        for (let i = snakeBody.length - 1; i > 0; i--) {
+            for (let q=0; q<4; q++) snakeBody.push([apple.x, apple.y]);
+            generateAppleCords();
 
-            let p1 = snakeBody[i - 1][0];
-            let p2 = snakeBody[i - 1][1];
-
-            snakeBody[i][0] = p1;
-            snakeBody[i][1] = p2;
-
-            
-
-            
         }
-        snakeBody[0][0] = snakeHead.x;
-        snakeBody[0][1] = snakeHead.y;
 
-}
+        for (let i=0; i<snakeBody.length; i++ ) {
 
-    snakeHead.x += velocity.x;
-    snakeHead.y += velocity.y;
+            ctx.fillStyle = "green";
+            ctx.fillRect(snakeBody[i][0] * boxSize, snakeBody[i][1]* boxSize, boxSize, boxSize);
+
+        }
+    
+        if (snakeBody.length > 0) {
+
+            for (let i = snakeBody.length - 1; i > 0; i--) {
+
+                let p1 = snakeBody[i - 1][0];
+                let p2 = snakeBody[i - 1][1];
+
+                snakeBody[i][0] = p1;
+                snakeBody[i][1] = p2;                
+
+                
+            }
+            snakeBody[0][0] = snakeHead.x;
+            snakeBody[0][1] = snakeHead.y;
+
+        }
+
+        snakeHead.x += vx*(1/segment);
+        snakeHead.y += vy*(1/segment);
+        await new Promise(r => setTimeout(r, speed));
+    }
+    if (stillRefresh == true) refreshGame();
 
 
 
@@ -105,18 +111,15 @@ function refreshGame() {
 
 function startGame() {
 
-
     canvas.width = rows * boxSize;
     canvas.height = cols * boxSize;
     generateAppleCords();
-    refreshing = setInterval(refreshGame, 100);
+    refreshGame();
 
 }
 
 window.onload = startGame;
 window.addEventListener("keydown", async function(a){
-
-    
 
     if (a.key == "ArrowRight" && velocity.x >= 0 ) {velocity.x = 1; velocity.y = 0;}
     else if (a.key == "ArrowLeft" && velocity.x <= 0 ) {velocity.x = -1; velocity.y = 0;}

@@ -1,4 +1,4 @@
-@import url('https://fonts.cdnfonts.com/css/oswald-4');
+@import url('https://fonts.cdnfonts.com/css/staatliches-2');
 
 body {
     text-align:center;
@@ -7,7 +7,7 @@ body {
 #gameFrame {
 
     background-color : #81bc2f;
-    filter: blur(10px);
+    filter: blur(33px);
 
     padding:50px;
     margin:auto;
@@ -23,15 +23,15 @@ body {
 }
 
 #info {
-    display:block;
-    font-size:40px;
-    font-weight : 20px;
-    font-family: 'Oswald', sans-serif;
-    position:absolute;
-    top:45%;
-    left:0;
-    right:0;
-    bottom:0;
+
+    position: absolute;
     
+}
+
+.ad {
+
+    font-family: 'Staatliches', sans-serif;
+    font-size : 2em;
+
 
 }

@@ -14,23 +14,16 @@ BESTSCORE = (BESTSCORE == null) ? 0 : BESTSCORE;
 
 var sound = document.createElement("audio");
 sound.src = "./assets/apple.wav";
-sound.setAttribute("preload", "auto");
-sound.setAttribute("controls", "none");
-sound.style.display = "none";
-document.body.appendChild(sound);
 
 var boom = document.createElement("audio");
 boom.src = "./assets/boom.wav";
-boom.setAttribute("preload", "auto");
-boom.setAttribute("controls", "none");
-boom.style.display = "none";
-document.body.appendChild(boom);
+
+var death = document.createElement("audio");
+death.src = "./assets/death.wav";
 
 
 
 var stillRefresh=false;
-
-
 var snakeBody = [];
 
 var apple = {
@@ -47,11 +40,25 @@ var snakeHead = {
     y:5
 };
 
+function pressTostartGame(a) {
+
+    if (a.key.includes("Arrow")) {
+
+        document.querySelector('#gameFrame').style.filter = "blur(0px)";
+        document.querySelector('#info').style.display = "none";
+
+        stillRefresh=true;
+        refreshGame();
+        window.removeEventListener('keydown', pressTostartGame);
+
+    }
+}
+
 function generateAppleCords() {
 
     let x = Math.floor(Math.random() * rows);
     let y = Math.floor(Math.random() * cols);
-
+    snakeBody.forEach((item)=>{if (Math.round(item[0]) == x && Math.round(item[1]) == y) {generateAppleCords()}})
     apple =  {x:x, y:y};
 
 }
@@ -60,6 +67,7 @@ function endGame() {
 
     stillRefresh=false;
     if (Math.floor(Math.random()*3) == 2) boom.play();
+    else death.play();
     if (SCORE > BESTSCORE) localStorage.snake_best_score = SCORE;
 
     alert("Game over! Try again");
@@ -84,12 +92,6 @@ async function refreshGame() {
             }
         }
 
-        
-        ctx.fillStyle = "red";
-        img = new Image();
-        img.src = "assets/apple.svg";
-        ctx.drawImage(img, apple.x*boxSize, apple.y*boxSize, appleSize, appleSize);
-
 
         ctx.fillStyle = "yellow";
         ctx.fillRect(snakeHead.x * boxSize, snakeHead.y * boxSize, boxSize, boxSize);
@@ -111,6 +113,11 @@ async function refreshGame() {
             ctx.fillRect(snakeBody[i][0] * boxSize, snakeBody[i][1]* boxSize, boxSize, boxSize);
 
         }
+
+        ctx.fillStyle = "red";
+        img = new Image();
+        img.src = "assets/apple.svg";
+        ctx.drawImage(img, apple.x*boxSize, apple.y*boxSize, appleSize, appleSize);
     
         if (snakeBody.length > 0) {
 
@@ -173,16 +180,4 @@ window.addEventListener("keydown", async function(a){
 
 });
 
-window.addEventListener("keydown", function r(a) {
-    if (a.key == "ArrowRight") {
-        document.querySelector('#gameFrame').style.filter = "blur(0px)";
-        document.querySelector('#info').style.display = "none";
-        stillRefresh=true;
-        velocity.x=1;
-        refreshGame();
-        window.removeEventListener('keydown', r);
-
-    }
-    
-
-})
+window.addEventListener("keydown", pressTostartGame)

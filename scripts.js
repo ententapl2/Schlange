@@ -1,4 +1,4 @@
-const segment = 7;
+const segment = 8;
 const speed = 22;
 const rows = 10;
 const cols = 10;
@@ -52,7 +52,7 @@ function pressTostartGame(a) {
         document.querySelector('#info').style.display = "none";
 
         stillRefresh = true;
-        refreshGame();
+        startGame();
         window.removeEventListener('keydown', pressTostartGame);
 
     }
@@ -74,8 +74,7 @@ function generateAppleCords() {
 function endGame(overType) {
 
     stillRefresh = false;
-    if (Math.floor(Math.random() * 3) == 2) boom.play();
-    else death.play();
+    if (Math.floor(Math.random() * 3) == 2) boom.play(); else death.play();
     if (SCORE > BESTSCORE) localStorage.snake_best_score = SCORE;
 
     alert( (overType == true) ? ("Game over! Try again") : ("You've won. Congrats!"));
@@ -83,47 +82,42 @@ function endGame(overType) {
 }
 
 async function refreshGame() {
-    canInput = true;
+
+    if (key == "ArrowRight" && velocity.x >= 0) { velocity.x = 1; velocity.y = 0; }
+    else if (key == "ArrowLeft" && velocity.x <= 0) { velocity.x = -1; velocity.y = 0; }
+    else if (key == "ArrowUp" && velocity.y <= 0) { velocity.y = -1; velocity.x = 0; }
+    else if (key == "ArrowDown" && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; }
 
     vx = velocity.x;
     vy = velocity.y;
 
-    for (let n = 0; n < segment; n++) {
+    for (let n=0; n<segment; n++) {
+
+
+        /* --------  POCZĄTEK RYSOWANIA OBIEKTÓW --------  */
+
+        snakeHead.x += vx * (1/segment);
+        snakeHead.y += vy * (1/segment);
 
         ctx.shadowBlur = 0;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let x = 0; x < rows; x++) {
-            for (let y = 0; y < cols; y++) {
+        for (let n = 0; n < segment; n++) {
 
-                ctx.fillStyle = ((x - y) % 2 == 0) ? "#8ecc39" : "#a7d948";
-                ctx.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
+            ctx.shadowBlur = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+            for (let x = 0; x < rows; x++) {
+                for (let y = 0; y < cols; y++) {
+    
+                    ctx.fillStyle = ((x - y) % 2 == 0) ? "#8ecc39" : "#a7d948";
+                    ctx.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
+                }
             }
         }
-
 
         ctx.fillStyle = "yellow";
         ctx.fillRect(snakeHead.x * boxSize, snakeHead.y * boxSize, boxSize, boxSize);
-        t = { x: Math.round(snakeHead.x), y: Math.round(snakeHead.y) };
-
-        if ((t.x >= canvas.width / boxSize) || (t.y >= canvas.height / boxSize) || (t.x < 0) || (t.y < 0)) { endGame(true); return null; }
-        if ((Math.round(snakeHead.x) == apple.x) && (Math.round(snakeHead.y) == apple.y)) {
-
-            for (let q = 0; q < segment-1; q++) snakeBody.push([apple.x, apple.y]);
-            sound.play();
-            if((snakeBody.length) / (segment - 1) == cols * rows){
-                endGame(false);
-                return;
-            }
-            if (fruitType == "./assets/apple.svg") firstSpeed += 0.25;
-            else firstSpeed -= 3;
-
-            generateAppleCords();
-            SCORE++;
-
-
-
-        }
 
         for (let i = 0; i < snakeBody.length; i++) {
 
@@ -132,50 +126,56 @@ async function refreshGame() {
 
         }
 
-        ctx.fillStyle = "red";
         img = new Image();
         img.src = fruitType;
         ctx.drawImage(img, apple.x * boxSize, apple.y * boxSize, appleSize, appleSize);
-
-        if (snakeBody.length > 0) {
-
-            for (let i = snakeBody.length - 1; i > 0; i--) {
-                if ((snakeHead.x == snakeBody[i][0] && snakeHead.y == snakeBody[i][1])) { endGame(true); return null; }
-
-                let p1 = snakeBody[i - 1][0];
-                let p2 = snakeBody[i - 1][1];
-
-                snakeBody[i][0] = p1;
-                snakeBody[i][1] = p2;
-
-
-            }
-            snakeBody[0][0] = snakeHead.x;
-            snakeBody[0][1] = snakeHead.y;
-
-        }
-
-        snakeHead.x += vx * (1 / segment);
-        snakeHead.y += vy * (1 / segment);
 
         ctx.shadowColor = "black";
         ctx.shadowBlur = 13;
         ctx.lineWidth = 3;
         ctx.fillStyle = "white";
-        ctx.font = "24px Courier New";
+        ctx.font = "16px Courier New";
 
         ctx.strokeText(("SCORE: " + SCORE), 6 , 30);
         ctx.fillText(("SCORE: " + SCORE), 6, 30);
         ctx.strokeText(("BEST SCORE: " + BESTSCORE), 6, 70);
         ctx.fillText(("BEST SCORE: " + BESTSCORE), 6, 70);
 
-        await new Promise(r => setTimeout(r, firstSpeed));
-    }
-    if (stillRefresh == true) {
-        refreshGame();
-        
-    }
+        /* -------- KONIEC OBSZARU RYSOWANIA --------  */
 
+
+        if (snakeBody.length > 0)
+        {
+    
+            for (let i = snakeBody.length - 1; i > 0; i--) {
+
+                snakeBody[i][0] = snakeBody[i - 1][0];
+                snakeBody[i][1] = snakeBody[i - 1][1];
+                if ((snakeBody[i][0]) == (snakeHead.x) && (snakeBody[i][1]) == (snakeHead.y)) {endGame(true);return;}
+    
+            }
+            snakeBody[0][0] = snakeHead.x;
+            snakeBody[0][1] = snakeHead.y;
+            
+    
+        }
+        t = { x: (snakeHead.x), y: (snakeHead.y) };
+        if ((t.x >= canvas.width / boxSize) || (t.y >= canvas.height / boxSize) || (t.x < 0) || (t.y < 0)) {endGame(true);return;}
+
+
+        await new Promise(r => setTimeout(r, firstSpeed));
+
+    }
+    if (snakeHead.x == apple.x && snakeHead.y == apple.y) 
+    {
+        for (let q=0; q<segment-1; q++) {snakeBody.push([apple.x, apple.y])}; 
+        firstSpeed += (fruitType == "./assets/apple.svg") ? 0.25 : -3;
+        SCORE++;
+        if((snakeBody.length) / (segment - 1) == cols * rows) {endGame(false);return;}
+        generateAppleCords();
+
+    } 
+    if (stillRefresh == true) refreshGame();
 
 
 }
@@ -191,16 +191,6 @@ function startGame() {
 
 }
 
-window.onload = startGame;
-window.addEventListener("keydown", async function (a) {
-    if(!canInput) return;
 
-    if (a.key == "ArrowRight" && velocity.x >= 0) { velocity.x = 1; velocity.y = 0; }
-    else if (a.key == "ArrowLeft" && velocity.x <= 0) { velocity.x = -1; velocity.y = 0; }
-    else if (a.key == "ArrowUp" && velocity.y <= 0) { velocity.y = -1; velocity.x = 0; }
-    else if (a.key == "ArrowDown" && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; }
-
-    canInput = false;
-});
-
+window.addEventListener("keydown", (a)=>{key = a.key;});
 window.addEventListener("keydown", pressTostartGame)

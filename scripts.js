@@ -1,8 +1,8 @@
-const segment = 5;
-const speed = 22;
+const segment = 7;
+const speed = 30;
 const rows = 13;
 const cols = 13;
-const boxSize = 50;
+const boxSize = 40;
 const appleSize = boxSize;
 
 let canInput = true;
@@ -27,6 +27,7 @@ death.src = "./assets/death.wav";
 
 var stillRefresh = false;
 var snakeBody = [];
+var fruitType = "";
 
 var apple = {
     x: 0,
@@ -38,8 +39,8 @@ var velocity = {
     y: 0
 }
 var snakeHead = {
-    x: 5,
-    y: 5
+    x: 1,
+    y: 1
 };
 
 function pressTostartGame(a) {
@@ -58,10 +59,14 @@ function pressTostartGame(a) {
 
 function generateAppleCords() {
 
+    let isOn = false;
     let x = Math.floor(Math.random() * rows);
     let y = Math.floor(Math.random() * cols);
-    snakeBody.forEach((item) => { if (Math.round(item[0]) == x && Math.round(item[1]) == y) { generateAppleCords() } })
+    snakeBody.forEach((item) => { if (Math.round(item[0]) == x && Math.round(item[1]) == y) {isOn=true; }})
     apple = { x: x, y: y };
+    fruitType = (Math.floor(Math.random() * 100)<15) ? "./assets/mango.svg" : "./assets/apple.svg";
+
+    if (isOn == true) generateAppleCords();
 
 }
 
@@ -103,7 +108,7 @@ async function refreshGame() {
         if ((t.x >= canvas.width / boxSize) || (t.y >= canvas.height / boxSize) || (t.x < 0) || (t.y < 0)) { endGame(); return null; }
         if ((Math.round(snakeHead.x) == apple.x) && (Math.round(snakeHead.y) == apple.y)) {
 
-            for (let q = 0; q < 4; q++) snakeBody.push([apple.x, apple.y]);
+            for (let q = 0; q < segment-1; q++) snakeBody.push([apple.x, apple.y]);
             sound.play();
             generateAppleCords();
             SCORE++;
@@ -119,7 +124,7 @@ async function refreshGame() {
 
         ctx.fillStyle = "red";
         img = new Image();
-        img.src = "assets/apple.svg";
+        img.src = fruitType;
         ctx.drawImage(img, apple.x * boxSize, apple.y * boxSize, appleSize, appleSize);
 
         if (snakeBody.length > 0) {

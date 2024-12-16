@@ -14,8 +14,8 @@ var BESTSCORE = localStorage.getItem("snake_best_score");
 BESTSCORE = (BESTSCORE == null) ? 0 : BESTSCORE;
 
 
-var sound = document.createElement("audio");
-sound.src = "./assets/apple.wav";
+var eating = document.createElement("audio");
+eating.src = "./assets/apple.wav";
 
 var boom = document.createElement("audio");
 boom.src = "./assets/boom.wav";
@@ -172,6 +172,7 @@ async function refreshGame() {
         firstSpeed += (fruitType == "./assets/apple.svg") ? 0.25 : -3;
         SCORE++;
         if((snakeBody.length) / (segment - 1) == cols * rows) {endGame(false);return;}
+        eating.play();
         generateAppleCords();
 
     } 

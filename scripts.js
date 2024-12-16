@@ -8,6 +8,9 @@ const appleSize = boxSize;
 let canInput = true;
 
 const canvas = document.getElementById("frame");
+canvas.width = rows * boxSize;
+canvas.height = cols * boxSize;
+
 var ctx = canvas.getContext("2d");
 var SCORE = 0;
 var BESTSCORE = localStorage.getItem("snake_best_score");
@@ -183,8 +186,6 @@ async function refreshGame() {
 
 function startGame() {
 
-    canvas.width = rows * boxSize;
-    canvas.height = cols * boxSize;
     document.querySelector("#gameFrame").style.width = canvas.width;
     document.querySelector("#gameFrame").style.height = canvas.height;
     generateAppleCords();
@@ -195,3 +196,8 @@ function startGame() {
 
 window.addEventListener("keydown", (a)=>{key = a.key;});
 window.addEventListener("keydown", pressTostartGame)
+window.onload = () => {
+    const obj = document.querySelector("#banner")
+    obj.width = canvas.width/0.75;
+    obj.height = canvas.height/2.3;
+}

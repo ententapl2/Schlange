@@ -177,10 +177,10 @@ window.onload = startGame;
 window.addEventListener("keydown", async function (a) {
     if(!canInput) return;
 
-    if (a.key == "ArrowRight" && velocity.x >= 0) { velocity.x = 1; velocity.y = 0; }
-    else if (a.key == "ArrowLeft" && velocity.x <= 0) { velocity.x = -1; velocity.y = 0; }
-    else if (a.key == "ArrowUp" && velocity.y <= 0) { velocity.y = -1; velocity.x = 0; }
-    else if (a.key == "ArrowDown" && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; }
+    if ((a.key == "ArrowRight" || a.key.toLowerCase() == "d") && velocity.x >= 0) { velocity.x = 1; velocity.y = 0; }
+    else if ((a.key == "ArrowLeft" || a.key.toLowerCase() == "a") && velocity.x <= 0) { velocity.x = -1; velocity.y = 0; }
+    else if ((a.key == "ArrowUp" || a.key.toLowerCase() == "w") && velocity.y <= 0) { velocity.y = -1; velocity.x = 0; }
+    else if ((a.key == "ArrowDown" || a.key.toLowerCase() == "s") && velocity.y >= 0) { velocity.y = 1; velocity.x = 0; }
 
     canInput = false;
 });

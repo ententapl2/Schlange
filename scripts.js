@@ -1,7 +1,7 @@
 const segment = 5;
-const speed = 22;
-const rows = 13;
-const cols = 13;
+const speed = 60;
+const rows = 3;
+const cols = 3;
 const boxSize = 50;
 const appleSize = boxSize;
 
@@ -38,8 +38,8 @@ var velocity = {
     y: 0
 }
 var snakeHead = {
-    x: 5,
-    y: 5
+    x: 1,
+    y: 1
 };
 
 function pressTostartGame(a) {
@@ -60,7 +60,13 @@ function generateAppleCords() {
 
     let x = Math.floor(Math.random() * rows);
     let y = Math.floor(Math.random() * cols);
-    snakeBody.forEach((item) => { if (Math.round(item[0]) == x && Math.round(item[1]) == y) { generateAppleCords() } })
+    snakeBody.forEach((element) =>{
+        if(element[0] == x && element[1] == y) {
+            generateAppleCords();
+            return;
+        }
+    });
+
     apple = { x: x, y: y };
 
 }
@@ -71,8 +77,6 @@ function endGame() {
     if (Math.floor(Math.random() * 3) == 2) boom.play();
     else death.play();
     if (SCORE > BESTSCORE) localStorage.snake_best_score = SCORE;
-
-    alert("Game over! Try again");
     location.reload();
 }
 
@@ -103,8 +107,12 @@ async function refreshGame() {
         if ((t.x >= canvas.width / boxSize) || (t.y >= canvas.height / boxSize) || (t.x < 0) || (t.y < 0)) { endGame(); return null; }
         if ((Math.round(snakeHead.x) == apple.x) && (Math.round(snakeHead.y) == apple.y)) {
 
-            for (let q = 0; q < 4; q++) snakeBody.push([apple.x, apple.y]);
+            for(let q = 0; q < segment - 1; q++) snakeBody.push([apple.x, apple.y]);
             sound.play();
+            if((snakeBody.length) / (segment - 1) == cols * rows){
+                alert("You have won. Congratulations!");
+                endGame();
+            }
             generateAppleCords();
             SCORE++;
 
@@ -125,7 +133,7 @@ async function refreshGame() {
         if (snakeBody.length > 0) {
 
             for (let i = snakeBody.length - 1; i > 0; i--) {
-                if ((snakeHead.x == snakeBody[i][0] && snakeHead.y == snakeBody[i][1])) { endGame(); return null; }
+                if ((snakeHead.x == snakeBody[i][0] && snakeHead.y == snakeBody[i][1])) { endGame(); alert("Game over! Try again"); return null; }
 
                 let p1 = snakeBody[i - 1][0];
                 let p2 = snakeBody[i - 1][1];
@@ -156,6 +164,7 @@ async function refreshGame() {
 
         await new Promise(r => setTimeout(r, speed));
     }
+
     if (stillRefresh == true) refreshGame();
 
 

@@ -151,10 +151,10 @@ async function refreshGame() {
         {
     
             for (let i = snakeBody.length - 1; i > 0; i--) {
-
+                if ((snakeBody[i][0]) == (snakeHead.x) && (snakeBody[i][1]) == (snakeHead.y)) {endGame(true);return;}
                 snakeBody[i][0] = snakeBody[i - 1][0];
                 snakeBody[i][1] = snakeBody[i - 1][1];
-                if ((snakeBody[i][0]) == (snakeHead.x) && (snakeBody[i][1]) == (snakeHead.y)) {endGame(true);return;}
+                
     
             }
             snakeBody[0][0] = snakeHead.x;
